@@ -14,8 +14,8 @@ project.
 		file to the project as well as the underlying git repo.
 + Templates for file types
 	+ Examples
-		+ dide add filename.html -t template_name
-		+ dide add cppclass.cpp -t class
+		+ bide add filename.html -t template_name
+		+ bide add cppclass.cpp -t class
 
 ## Language
 Shell for now because it is quick to write. This is the prototype.

@@ -32,5 +32,5 @@ May migrate to an industrial strength language later.
 # Current Status
 Creates files only.
 + Example: bide add.rkt
-	+ Creates file add.rkt with contents and persmissions of the defualt
+	+ Creates file add.rkt with contents and permissions of the default
 			template ~/.bide/rkt_default.bide

@@ -1,7 +1,7 @@
-# C Project Manager: bide
+# Project Manager: bide
 
 ## Purpose
-Manages big C projects. Manages dependencies and builds the
+Manages big projects. Manages dependencies and builds the
 project.
 
 ## Features
@@ -12,14 +12,14 @@ project.
 		add files, create sub-projects.
 	+ May interface with git. So that "bide add file", will add
 		file to the project as well as the underlying git repo.
-+ Template add-ons for code.
++ Templates for file types
 	+ Examples
 		+ dide add filename.html -t template_name
 		+ dide add cppclass.cpp -t class
 
 ## Language
-Perl because it is quick to write, and has great support for
-text manipulation and running processes.
+Shell for now because it is quick to write. This is the prototype.
+May migrate to an industrial strength language later.
 
 # Usage example
 + adding files: creates a file of type ext, with template initialization.
@@ -27,3 +27,10 @@ text manipulation and running processes.
 	+ Support c, perl files.
 + adding a project: creates a directory, and readme.
 	+ bide project project_name -type c
+
+
+# Current Status
+Creates files only.
++ Example: bide add.rkt
+		+ Creates file add.rkt with contents and persmissions of the defualt
+			template ~/.bide/rkt_default.bide

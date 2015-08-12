@@ -7,7 +7,7 @@ fi
 # Directories
 bidedir=$HOME/.bide
 ftdir=$bidedir/fttemplate
-deftemplate=$ftdir/default.bide
+deftemplate=$ftdir/default.txt
 
 # Make the directories if they don't exist.
 if [ ! -d $bidedir ]; then
@@ -27,16 +27,16 @@ fi
 # default file name.
 filename=$1
 ext=${filename##*.}
-template=$ftdir/${ext}_default.bide
+template=$ftdir/default.${ext}
 
 # Check the case where there is no extension.
 if [ $ext = $filename ]; then
-	template=$ftdir/default.bide
+	template=$deftemplate
 fi
 
 # Check if the extension template file exits.
 if [ ! -e $template ]; then
-	template=$ftdir/default.bide
+	template=$deftemplate
 fi
 
 # Copy the template file.

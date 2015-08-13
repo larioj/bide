@@ -34,3 +34,13 @@ Creates files only.
 + Example: bide add.rkt
 	+ Creates file add.rkt with contents and permissions of the default
 			template ~/.bide/rkt_default.bide
+
+
+# Wish List
++ c header files
+	+ Translate h files function declarations
+		to stubs.
+	+ Update function stubs to reflect header
+		files.
++ Editing files
+	+ Primary mode

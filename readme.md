@@ -44,3 +44,4 @@ Creates files only.
 		files.
 + Editing files
 	+ Primary mode
++ Add switch so that it creates files without editing them.

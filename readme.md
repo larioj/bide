@@ -45,3 +45,8 @@ Creates files only.
 + Editing files
 	+ Primary mode
 + Add switch so that it creates files without editing them.
+
+# Updates
++ Aug 13 2015
+	+ Added the option to call the editor on file creation.
+		+ Flag -e

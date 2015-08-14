@@ -72,14 +72,62 @@ openEditor() {
 	$editor $@
 }
 
+## Gets the list of flags, -[flag] in the
+## arguments.
+getFlags() {
+	for arg in $@; do
+		if [[ $arg == "-"* ]]; then
+			printf "%s " "$arg"
+		fi
+	done
+	printf "\n"
+}
+
+## Gets the list of files to edit and,
+## create. It removes all other elements.
+getFiles() {
+	for arg in $@; do
+		if [[ $arg != "-"* ]]; then
+			printf "%s " "$arg"
+		fi
+	done
+	printf "\n"
+}
+
+## Returns 1 if the first element in the args
+## is contained in the rest of the args.
+containsElement() {
+	local element other
+	element=$1
+	for other in ${@:2}; do
+		if [ $other == $element ]; then
+			return 1
+		fi
+	done
+	return 0
+}
+
 ## Entry point of the program.
 main() {
-	checkUsage $@
+	files=($(getFiles $@))
+	flags=($(getFlags $@))
+
+	checkUsage $files
 	install
-	for file in $@; do
+	for file in $files; do
 		createFile $file
 	done
-	openEditor $@
+	
+	## >>> Buggy
+	## The function call creates a whole new
+	## instance of the shell. If I try to jump out
+	## of the editor into the environment, something
+	## breaks and vim goes bonkers.
+	containsElement "-e" "${flags[@]}"
+	if [ $? == 1 ]; then
+		openEditor $files
+	fi
+	## <<<
 }
 
 # Call the main method.

@@ -4,7 +4,7 @@
 Manages big projects. Manages dependencies and builds the
 project.
 
-## Features
+## Possible Features
 + Build/Project Manager
 	+ Maybe interfaces with make?
 	+ Git like interface.
@@ -22,19 +22,21 @@ Shell for now because it is quick to write. This is the prototype.
 May migrate to an industrial strength language later.
 
 # Usage example
-+ adding files: creates a file of type ext, with template initialization.
-	+ bide add filename.ext
-	+ Support c, perl files.
-+ adding a project: creates a directory, and readme.
-	+ bide project project_name -type c
-
++ Creating files
+	+ bide filename.ext
++ Enabling editing after creation
+	+ bide -e filename.ext
 
 # Current Status
-Creates files only.
-+ Example: bide add.rkt
-	+ Creates file add.rkt with contents and permissions of the default
-			template ~/.bide/rkt_default.bide
+Creates files from simple templates.
 
+For example, bide fun.rkt creates file fun.rkt with contents and permissions
+of the default template ~/.bide/default.rkt. If the file already exists
+it does nothing, unless the editing switch, -e, is specified in which case
+it will called the editor on the files.
+
+Also supports editing files, given the switch -e bide will call
+the editor after creating the files.
 
 # Wish List
 + c header files
@@ -42,9 +44,7 @@ Creates files only.
 		to stubs.
 	+ Update function stubs to reflect header
 		files.
-+ Editing files
-	+ Primary mode
-+ Add switch so that it creates files without editing them.
++ Better templates, with argument substitution.
 
 # Updates
 + Aug 13 2015

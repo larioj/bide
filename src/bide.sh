@@ -4,6 +4,7 @@
 ## Directories
 bidedir=$HOME/.bide
 ftdir=$bidedir/fttemplate
+rundir=$bidedir/runscripts
 deftemplate=$ftdir/default.txt
 editor=$VISUAL
 
@@ -18,6 +19,10 @@ install() {
 
 	if [ ! -d $ftdir ]; then
 		mkdir $ftdir
+	fi
+
+	if [ ! -d $rundir ]; then
+		mkdir $rundir
 	fi
 
 	# if default template does not exist make it.
@@ -107,6 +112,21 @@ containsElement() {
 	return 0
 }
 
+runFiles() {
+	local file ext runscript
+	for file in  $@; do
+		ext=${file##*.}
+		if [ $file != $ext ]; then
+			runscript=${rundir}/${ext}_run.sh
+			if [ -e $runscript ]; then
+				$runscript $file
+			else
+				./$file
+			fi
+		fi
+	done
+}
+
 ## Entry point of the program.
 main() {
 	files=($(getFiles $@))
@@ -114,10 +134,16 @@ main() {
 
 	checkUsage $files
 	install
-	for file in $files; do
-		createFile $file
-	done
-	
+
+	containsElement "-r" "${flags[@]}"
+	if [ $? == 1 ]; then
+		runFiles "${files[@]}"
+	else
+		for file in "${files[@]}"; do
+			createFile $file
+		done
+	fi
+
 	## >>> Buggy
 	## The function call creates a whole new
 	## instance of the shell. If I try to jump out
@@ -132,3 +158,6 @@ main() {
 
 # Call the main method.
 main $@
+
+## Todo
+# Add get extension method.

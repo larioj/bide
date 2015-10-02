@@ -1,163 +1,158 @@
 #! /bin/bash
-
 # Global Variables
-## Directories
+scriptName=$0
+
+# Directories
 bidedir=$HOME/.bide
 ftdir=$bidedir/fttemplate
 rundir=$bidedir/runscripts
 deftemplate=$ftdir/default.txt
-editor=$VISUAL
+
+# Operations
+actionDic=(
+"usage:usage"
+"r:runFile"
+"m:makeFiles"
+"install:install"
+"uninstall:uninstall"
+"link:link"
+)
+
+# Entry Point
+main () {
+  local action files
+  files="${@:2}"
+  $(getAction $1) $files
+}
+
+# Top Level Actions
+usage () {
+  echo "usage: $scriptName action [file]+"
+}
+
+makeFiles () {
+  local files file
+  files=$@
+  for file in "${files[@]}"; do
+    createFile $file
+  done
+}
+
+runFile () {
+  local args file ext runscript
+  file=$1
+  args="${@:2}"
+  ext=$(getExt $file)
+  runscript=${rundir}/${ext}_run.sh
+  if [ -e $runscript ]; then
+    $runscript $file $args
+  else
+    ./$file $args
+  fi
+}
+
+install() {
+  # Make the directories if they don't exist.
+  if [ ! -d $bidedir ]; then
+    mkdir $bidedir
+  fi
+
+  if [ ! -d $ftdir ]; then
+    mkdir $ftdir
+  fi
+
+  if [ ! -d $rundir ]; then
+    mkdir $rundir
+  fi
+
+  # if default template does not exist make it.
+  if [ ! -e $deftemplate ]; then
+    touch $deftemplate
+  fi
+}
+
+uninstall () {
+  echo "undefined"
+}
+
+## Must be executed from where bide is
+## located.
+link () {
+  local curDir
+  curDir=$(pwd)
+  echo "ln -s \"$curDir/bide.sh\" \"/usr/local/bin/bide\""
+}
 
 # Functions
-## Set up the bide directory structure
-## if it does not exist.
-install() {
-	# Make the directories if they don't exist.
-	if [ ! -d $bidedir ]; then
-		mkdir $bidedir
-	fi
-
-	if [ ! -d $ftdir ]; then
-		mkdir $ftdir
-	fi
-
-	if [ ! -d $rundir ]; then
-		mkdir $rundir
-	fi
-
-	# if default template does not exist make it.
-	if [ ! -e $deftemplate ]; then
-		touch $deftemplate
-	fi
-
-	if [ -z $VISUAL ]; then
-		editor=/usr/bin/vim
-	fi
-}
-
-## Check for correct formating of the
-## command line arguments.
-checkUsage() {
-	if [ -z $1 ]; then
-		echo "usage: $0 [filename.ext]+"
-		exit
-	fi
-}
-
 ## Creates a file based upon the name
 ## passed in. If the file already exits
 ## it does nothing.
 createFile() {
-	# Get the extension and create the
-	# default file name.
-	filename=$1
+  local filename ext template
 
-	if [ ! -e $filename ]; then
-		ext=${filename##*.}
-		template=$ftdir/default.${ext}
+  # Get the extension and create the
+  # default file name.
+  filename=$1
 
-		# Check the case where there is no extension.
-		if [ $ext = $filename ]; then
-			template=$deftemplate
-		fi
+  if [ ! -e $filename ]; then
+    ext=$(getExt $filename)
+    template=$ftdir/default.${ext}
 
-		# Check if the extension template file exits.
-		if [ ! -e $template ]; then
-			template=$deftemplate
-		fi
+    # Check the case where there is no extension.
+    if [ -z $ext ]; then
+      template=$deftemplate
+    fi
 
-		# Copy the template file.
-		cp $template $filename
-	fi
+    # Check if the extension template file exits.
+    if [ ! -e $template ]; then
+      template=$deftemplate
+    fi
+
+    # Copy the template file.
+    cp $template $filename
+  fi
 }
 
-## Opens the system editor with the file
-## created.
-openEditor() {
-	$editor $@
+## Gets the action corresponding to the string passed
+## in.
+getAction () {
+  local action
+  action="usage"
+  for item in ${actionDic[*]}
+  do
+    if [ "$1" == "$(key $item)" ]; then
+      action="$(val $item)"
+    fi
+  done
+  printf "%s" $action
 }
 
-## Gets the list of flags, -[flag] in the
-## arguments.
-getFlags() {
-	for arg in $@; do
-		if [[ $arg == "-"* ]]; then
-			printf "%s " "$arg"
-		fi
-	done
-	printf "\n"
+getExt () {
+  local file ext
+  file=$1
+  ext=${file##*.}
+  if [ $file == $ext ]; then
+    ext=""
+  fi
+  printf "%s" $ext
 }
 
-## Gets the list of files to edit and,
-## create. It removes all other elements.
-getFiles() {
-	for arg in $@; do
-		if [[ $arg != "-"* ]]; then
-			printf "%s " "$arg"
-		fi
-	done
-	printf "\n"
+getName () {
+  local file name
+  file=$1
+  name=${file%%.*}
+  printf "%s" $name
 }
 
-## Returns 1 if the first element in the args
-## is contained in the rest of the args.
-containsElement() {
-	local element other
-	element=$1
-	for other in ${@:2}; do
-		if [ $other == $element ]; then
-			return 1
-		fi
-	done
-	return 0
+## Gets the second element of a pair of the form "key:val"
+val () {
+  printf "%s" ${1##*:}
 }
 
-runFiles() {
-	local file ext runscript
-	for file in  $@; do
-		ext=${file##*.}
-		if [ $file != $ext ]; then
-			runscript=${rundir}/${ext}_run.sh
-			if [ -e $runscript ]; then
-				$runscript $file
-			else
-				./$file
-			fi
-		fi
-	done
-}
-
-## Entry point of the program.
-main() {
-	files=($(getFiles $@))
-	flags=($(getFlags $@))
-
-	checkUsage $files
-	install
-
-	containsElement "-r" "${flags[@]}"
-	if [ $? == 1 ]; then
-		runFiles "${files[@]}"
-	else
-		for file in "${files[@]}"; do
-			createFile $file
-		done
-	fi
-
-	## >>> Buggy
-	## The function call creates a whole new
-	## instance of the shell. If I try to jump out
-	## of the editor into the environment, something
-	## breaks and vim goes bonkers.
-	containsElement "-e" "${flags[@]}"
-	if [ $? == 1 ]; then
-		openEditor $files
-	fi
-	## <<<
+## Gets the first element of a pair of the form "key:val"
+key () {
+  printf "%s" ${1%%:*}
 }
 
 # Call the main method.
 main $@
-
-## Todo
-# Add get extension method.

@@ -13,9 +13,6 @@ actionDic=(
 "usage:usage"
 "r:runFile"
 "m:makeFiles"
-"install:install"
-"uninstall:uninstall"
-"link:link"
 )
 
 # Entry Point
@@ -27,7 +24,7 @@ main () {
 
 # Top Level Actions
 usage () {
-  echo "usage: $scriptName action [file]+"
+  echo "usage: $scriptName action [params]+"
 }
 
 makeFiles () {
@@ -49,38 +46,6 @@ runFile () {
   else
     ./$file $args
   fi
-}
-
-install() {
-  # Make the directories if they don't exist.
-  if [ ! -d $bidedir ]; then
-    mkdir $bidedir
-  fi
-
-  if [ ! -d $ftdir ]; then
-    mkdir $ftdir
-  fi
-
-  if [ ! -d $rundir ]; then
-    mkdir $rundir
-  fi
-
-  # if default template does not exist make it.
-  if [ ! -e $deftemplate ]; then
-    touch $deftemplate
-  fi
-}
-
-uninstall () {
-  echo "undefined"
-}
-
-## Must be executed from where bide is
-## located.
-link () {
-  local curDir
-  curDir=$(pwd)
-  echo "ln -s \"$curDir/bide.sh\" \"/usr/local/bin/bide\""
 }
 
 # Functions

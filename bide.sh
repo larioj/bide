@@ -3,7 +3,7 @@
 scriptName=$0
 
 # Directories
-bidedir=$HOME/.bide
+bidedir=$HOME/bide
 ftdir=$bidedir/fttemplate
 rundir=$bidedir/runscripts
 deftemplate=$ftdir/default.txt

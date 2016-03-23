@@ -1,3 +1,3 @@
 #! /bin/bash
 
-scalariform "$@"
+scalariform -q  +alignParameters +alignSingleLineCaseStatements +compactControlReadability +compactStringConcatenation +doubleIndentClassDeclaration "$@" 

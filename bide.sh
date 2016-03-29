@@ -4,4 +4,4 @@
 source $HOME/bide/bideLib.sh
 
 # Call the main method
-main $@
+main "$@"
